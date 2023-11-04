@@ -30,7 +30,7 @@ router.get('/:id', (req, res) =>{
       message: 'not found'
     });
   } else {
-    res.json({
+    res.status(200).json({
       id,
       name: 'Product 2',
       price: 2000
@@ -60,7 +60,6 @@ router.patch('/:id', (req, res)=> {         //put y patch en teoria funcionan
 
 router.delete('/:id', (req, res)=> {
   const{ id } =req.params;
-  const body = req.body;
   res.json({
     message: 'deleted',
     id,
