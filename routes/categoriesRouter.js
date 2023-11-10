@@ -1,46 +1,39 @@
 const express = require('express');
 
+const CategorieService = require('../services/categoriesService');
+
 const router = express.Router();
+const service = new CategorieService;
 
 router.get('/', (req, res)=>{
-  res.send('Buenas, estas en Categories');
+  const categorie = service.find();
+  res.json(categorie);
 });
 
-router.get('/:categoryId/products/:productId', (req, res)=>{
-  const{categoryId, productId } = req.params;
-  res.json({
-    categoryId,
-    productId,
-  });
+router.get('/:id', (req, res)=>{
+  const{ id } = req.params;
+  const body = req.body;
+  const categorie = service.findOne(id, body);
+  res.json(categorie);
 });
 
 router.post('/', (req, res)=> {
   const body = req.body;
-  res.status(201).json({
-    message: 'created',
-    data: body
-    }
-  );
+  const newCategorie = service.create(body);
+  res.status(201).json(newCategorie);
 });
 
-router.patch('/:id', (req, res)=> {         //put y patch en teoria funcionan
-  const{ id } = req.params;                 //de la misma forma pero patch es para informacion parcial
+router.patch('/:id', (req, res)=> {
+  const{ id } = req.params;
   const body = req.body;
-  res.json({
-    message: 'updated',
-    data: body,
-    id,
-    }
-  );
+  const categorie = service.update(id, body);
+  res.json(categorie);
 });
 
 router.delete('/:id', (req, res)=> {
-  const{ id } =req.params;
-  res.json({
-    message: 'deleted',
-    id,
-    }
-  );
+  const{ id } = req.params;
+  const categorie = service.delete(id);
+  res.json(categorie);
 });
 
 module.exports=router;
