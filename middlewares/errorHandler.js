@@ -12,7 +12,17 @@ function errorHandler(err, req, res, next){
   });
 }
 
-module.exports={logErrors, errorHandler}
+function BoomErrorHandler(err, req, res, next){
+  if (err.isBoom){
+    const { output } = err;
+    res.status(output.statusCode).json(output.payload);
+  } else{
+      next(err);
+  }
+}
+
+
+module.exports={logErrors, errorHandler, BoomErrorHandler}
 
 //estos middlewares es mejor definirlos despues de crear el routing
 

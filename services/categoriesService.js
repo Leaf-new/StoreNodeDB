@@ -1,4 +1,6 @@
 const { faker } = require("@faker-js/faker");
+const boom = require('@hapi/boom');
+
 
 class CategorieService{
 
@@ -12,12 +14,14 @@ class CategorieService{
     for(let index = 0; index < limit; index++){
       this.categories.push({
         id: faker.string.uuid(),
-        name: faker.commerce.department()
+        name: faker.commerce.department(),
+        isBlock: faker.datatype.boolean(),
+
       });
     }
   }
 
-  create(data){
+  async create(data){
     const newCategorie = {
       id: faker.string.uuid(),
       ...data  // spread operation para concatenar los valores recibidos
@@ -30,14 +34,21 @@ class CategorieService{
     return this.categories;
   }
 
-  findOne(id){
-    return this.categories.find(item => item.id === id);
+  async findOne(id){
+    const categorie = this.categories.find(item => item.id === id);
+    if(!categorie){
+      throw boom.notFound('categorie not found');
+    }
+    if(categorie.isBlock){
+      throw boom.conflict('categorie is block');
+    }
+    return product;
   }
 
-  update(id, changes){
+  async update(id, changes){
     const index = this.categories.findIndex(item => item.id === id);
     if(index === -1){ // si findIndex no encuntra el elemento devuelve un -1
-      throw new Error('categorie not found')
+      throw boom.notFound('categorie not found')
     }
     const categorie = this.categories[index];
     this.categories[index] = {
@@ -48,10 +59,10 @@ class CategorieService{
 
   }
 
-  delete(id){
+  async delete(id){
     const index = this.categories.findIndex(item => item.id === id);
     if(index === -1){ // si findIndex no encuntra el elemento devuelve un -1
-      throw new Error('categorie not found')
+      throw boom.notFound('categorie not found')
     }
     this.categories.splice(index, 1);
     return { id };
