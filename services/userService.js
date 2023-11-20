@@ -1,5 +1,5 @@
-// todavia no se a instanciado en usersRouter
 const { faker } = require("@faker-js/faker");
+const boom = require('@hapi/boom');
 
 class usersService{
 
@@ -17,11 +17,12 @@ class usersService{
         lastname: faker.person.lastName(),
         gender: faker.person.gender(),
         email: faker.internet.email(),
+        isBlock: faker.datatype.boolean(),
       });
   }
  }
 
-  create(){
+  async create(){
     const newUser = {
       id: faker.string.uuid(),
       ...data // spread operation para concatenar los valores recibidos
@@ -34,14 +35,21 @@ class usersService{
     return this.user;
   }
 
-  findOne(id){
-    return this.user.find(item => item.id === id);
+  async findOne(id){
+    const user = this.user.find(item => item.id === id);
+    if(!user){
+      throw boom.notFound('user not found');
+    }
+    if(user.isBlock){
+      throw boom.conflict('user is blocked');
+    }
+    return user;
   }
 
-  update(id, changes){
+  async update(id, changes){
     const index = this.user.findIndex(item => item.id === id);
     if(index === -1){ // si findIndex no encuntra el elemento devuelve un -1
-      throw new Error('user not found')
+      throw boom.notFound('user not found');
     }
     const user = this.user[index];
     this.user[index] = {
@@ -51,10 +59,10 @@ class usersService{
     return this.user[index];
   }
 
-  delete(id){
+  async delete(id){
     const index = this.user.findIndex(item => item.id === id);
     if(index === -1){ // si findIndex no encuntra el elemento devuelve un -1
-      throw new Error('user not found')
+      throw boom.notFound('user not found');
     }
     this.user.splice(index, 1);
     return { id };

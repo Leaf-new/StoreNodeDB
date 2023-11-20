@@ -1,42 +1,50 @@
 const express = require('express');
-const { faker } = require("@faker-js/faker");
 
 const UserService = require('../services/userService');
-const router = express.Router();
 
+const router = express.Router();
 const service = new UserService;
 
-router.get('/',(req, res)=>{
-  const user = service.find();
+router.get('/', async (req, res)=>{
+  const user =  await service.find();
   res.json(user);
 })
 
-router.get('/:id',(req, res)=>{
+router.get('/:id', async (req, res, next)=>{
+try {
   const { id } = req.params;
-  const user = service.findOne(id);
+  const user = await service.findOne(id);
   res.json(user);
+} catch (error) {
+  next(error)
+}
 })
 
-router.post('/', (req, res)=> {
+router.post('/', async (req, res)=> {
   const body = req.body;
-  res.status(201).json({
-    message: 'created',
-    data: body
-    }
-  );
+  const newUser = await service.create(body);
+  res.status(201).json(newUser);
 });
 
-router.patch('/:id', (req, res)=> {         //put y patch en teoria funcionan
+router.patch('/:id', async (req, res, next)=> {         //put y patch en teoria funcionan
+try {
   const{ id } = req.params;                 //de la misma forma pero patch es para informacion parcial
   const body = req.body;
-  const user = service.update(id, body);
+  const user = await service.update(id, body);
   res.json(user);
+} catch (error) {
+  next(error);
+}
 });
 
-router.delete('/:id', (req, res)=> {
+router.delete('/:id', async (req, res, next)=> {
+try {
   const{ id } =req.params;
-  const rta = service.delete(id);
+  const rta = await service.delete(id);
   res.json(rta);
+} catch (error) {
+  next(error);
+}
 });
 
 module.exports = router;
