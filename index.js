@@ -2,6 +2,7 @@ console.log('my app');
 
 const express = require('express');
 const routerApi = require('./routes');
+const cors = require('cors');
 
 const{logErrors, errorHandler, BoomErrorHandler}= require('./middlewares/errorHandler')
 
@@ -20,6 +21,8 @@ app.get('/', (req, res)=>{
 app.get('/new-endpoint', (req, res)=>{
   res.send('nuevo endpoint')
 })
+
+app.use(cors());
 
 routerApi(app);
 
