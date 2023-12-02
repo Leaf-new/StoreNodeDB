@@ -22,7 +22,7 @@ class usersService{
   }
  }
 
-  async create(){
+  async create(data){
     const newUser = {
       id: faker.string.uuid(),
       ...data // spread operation para concatenar los valores recibidos
