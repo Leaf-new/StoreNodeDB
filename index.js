@@ -22,7 +22,18 @@ app.get('/new-endpoint', (req, res)=>{
   res.send('nuevo endpoint')
 })
 
-app.use(cors());
+const whithelist =['http://localhost:8080', 'http://myfrontend.co', 'null']
+const options = {
+ origin: (origin, callback) => {
+  if (whithelist.includes(origin)){
+    callback(null, true);
+  } else {
+    callback(new Error('Origin "'+origin+'" not allowed'));
+
+  }
+ }
+}
+app.use(cors(options));
 
 routerApi(app);
 
