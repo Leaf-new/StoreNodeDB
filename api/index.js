@@ -10,22 +10,14 @@ const{logErrors, errorHandler, BoomErrorHandler}= require('./middlewares/errorHa
 // es decir todos los endpoints que usen parametros por ejemplo, van siempre al final
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(express.json());  //middleware
 
-app.get('/', (req, res)=>{
-  res.send('wenas server con express')
-})
-
-app.get('/new-endpoint', (req, res)=>{
-  res.send('nuevo endpoint')
-})
-
-const whithelist =['http://localhost:8080', 'http://myfrontend.co', 'null']
+const whithelist =['http://localhost:3000', 'http://myfrontend.co', 'null']
 const options = {
  origin: (origin, callback) => {
-  if (whithelist.includes(origin)){
+  if (whithelist.includes(origin) || !origin){
     callback(null, true);
   } else {
     callback(new Error('Origin "'+origin+'" not allowed'));
@@ -34,6 +26,16 @@ const options = {
  }
 }
 app.use(cors(options));
+
+app.get('/api', (req, res)=>{
+  res.send('wenas server con express')
+})
+
+app.get('/api/new-endpoint', (req, res)=>{
+  res.send('nuevo endpoint')
+})
+
+
 
 routerApi(app);
 
