@@ -28,12 +28,12 @@ const options = {
 app.use(cors(options));
 
 app.get('/api', (req, res)=>{
-  res.send('wenas server con express')
-})
+  res.sendFile(__dirname + "/index.html")
+});
 
 app.get('/api/new-endpoint', (req, res)=>{
   res.send('nuevo endpoint')
-})
+});
 
 
 
