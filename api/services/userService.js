@@ -1,17 +1,19 @@
 const { faker } = require("@faker-js/faker");
 const boom = require('@hapi/boom');
 
-class usersService{
+const pool = require('../libs/postgresPool');
 
-  constructor(){
-    this.user = [];
+class UserService {
+  constructor() {
+    this.users =[];
     this.generate();
+    this.pool = pool;
+    this.pool.on('error',(err) => console.error(err));
   }
-
   generate(){
     const limit = 50;
     for (let index = 0; index < limit; index++){
-      this.user.push({
+      this.users.push({
         id: faker.string.uuid(),
         name: faker.person.firstName(),
         lastname: faker.person.lastName(),
@@ -22,52 +24,31 @@ class usersService{
   }
  }
 
-  async create(data){
-    const newUser = {
-      id: faker.string.uuid(),
-      ...data // spread operation para concatenar los valores recibidos
-    }
-    this.user.push(newUser);
-    return newUser;
+  async create(data) {
+    return data;
   }
 
-  find(){
-    return this.user;
+  async find() {
+    const query = 'SELECT * FROM tasks';
+    const rta = await this.pool.query(query);
+    return rta.rows;
   }
 
-  async findOne(id){
-    const user = this.user.find(item => item.id === id);
-    if(!user){
-      throw boom.notFound('user not found');
-    }
-    if(user.isBlock){
-      throw boom.conflict('user is blocked');
-    }
-    return user;
-  }
-
-  async update(id, changes){
-    const index = this.user.findIndex(item => item.id === id);
-    if(index === -1){ // si findIndex no encuntra el elemento devuelve un -1
-      throw boom.notFound('user not found');
-    }
-    const user = this.user[index];
-    this.user[index] = {
-      ...user,
-      ...changes
-    };
-    return this.user[index];
-  }
-
-  async delete(id){
-    const index = this.user.findIndex(item => item.id === id);
-    if(index === -1){ // si findIndex no encuntra el elemento devuelve un -1
-      throw boom.notFound('user not found');
-    }
-    this.user.splice(index, 1);
+  async findOne(id) {
     return { id };
   }
 
+  async update(id, changes) {
+    return {
+      id,
+      changes,
+    };
+  }
+
+  async delete(id) {
+    return { id };
+  }
 }
 
-module.exports = usersService;
+
+module.exports = UserService;
