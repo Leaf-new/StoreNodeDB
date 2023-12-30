@@ -1,3 +1,6 @@
+const { ValidationError } = require('sequelize');
+const boom = require('@hapi/boom');
+
 function logErrors (err, req, res, next){
   console.log('soy log errors');
   console.error(err);
@@ -21,8 +24,25 @@ function BoomErrorHandler(err, req, res, next){
   }
 }
 
+function QueryErrorHandler(err, req, res, next) {
+  if (err instanceof ValidationError) {
+    const { name, fields, parent } = err;
+    res.status(409).json({
+      name: name,
+      message: parent.detail,
+      field: fields,
+      parameters: parent.parameters,
+      errors: err.errors
+    });
+  } else{
+      next(err);
+  }
+}
 
-module.exports={logErrors, errorHandler, BoomErrorHandler}
+
+
+
+module.exports={logErrors, errorHandler, BoomErrorHandler, QueryErrorHandler}
 
 //estos middlewares es mejor definirlos despues de crear el routing
 

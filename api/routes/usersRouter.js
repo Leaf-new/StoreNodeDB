@@ -25,16 +25,20 @@ router.get('/:id',
   const user = await service.findOne(id);
   res.json(user);
  } catch (error) {
-  next(error)
+  next(error);
  }
 })
 
 router.post('/',
  validatorHandler(createUserSchema, 'body'),
- async (req, res)=> {
+ async (req, res, next)=> {
+  try {
   const body = req.body;
   const newUser = await service.create(body);
   res.status(201).json(newUser);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.patch('/:id',
