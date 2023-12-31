@@ -1,6 +1,9 @@
 version: '3.3'
 
 services:
+
+# Drivers para postgres en node"npm install pg"
+# "npm install pg-hstore"
   postgres:
     image: postgres:13
     environment:
@@ -19,4 +22,26 @@ services:
      - PGADMIN_DEFAULT_PASSWORD=${PG_PASSWORD}
     ports:
      - ${PG_PORT}:${PG_REFPORT}
+
+#drivers para sql en node "npm install --save mysql2"
+  mysql:
+    image: mysql:5
+    environment:
+     - MYSQL_DATABASE=${DB_NAME}
+     - MYSQL_USER=root
+     - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+     - MYSQL_PORT=3306
+    ports:
+     - 3306:3306
+    volumes:
+     - ./mysql_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+     - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+     - PMA_HOST=mysql
+    ports:
+     - 8080:80
+
 
